@@ -5,15 +5,21 @@
 //
 
 export interface GameState {
-  playerScore: number;
+  currentPlayer: "human" | "computer";
+  difficultyLevel: Difficulty;
+  humanScore: number;
   computerScore: number;
-  currentPlayerMove: Move;
+  move: Move;
+  roundHistory: RoundResult;
 }
 
-export interface Move {
-  playerHand: "rock" | "paper" | "scissor";
+export interface RoundResult {
+  humanMove: Move;
+  computerMove: Move;
+  outcome: Outcome;
+  roundNumber: number;
 }
 
-export interface Round {
-  playerRound: number;
-}
+export type Move = "rock" | "paper" | "scissor";
+export type Outcome = "human" | "computer" | "tie";
+export type Difficulty = "normal" | "hard";
