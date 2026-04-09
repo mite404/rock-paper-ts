@@ -1,3 +1,25 @@
+**Game Loop:**
+
+1. Player vs. AI (random or weighted)
+2. Each round: display scores
+3. Best of 5 or 7 rounds
+4. AI can have difficulty levels (random vs. pattern-detection)
+
+**Core Calculations:**
+(pure fn)
+- `determineWinner(playerMove, aiMove)` → WIN / LOSE / TIE
+- `calculateScore(result, currentScore)` → updated score
+
+(side efx)
+- `generateAIMove(difficulty, playerHistory?)` → weighted randomness
+
+**State:**
+
+- Player score / AI score
+- Round history
+- Move frequency (for AI to exploit patterns)
+
+
 # Personal Notes & Learning Reference
 
 ## Type Design Principle
@@ -12,6 +34,70 @@ When you start coding, ask yourself:
 - "Does this function depend on current time, random numbers, or file I/O?
   - If yes, pass those in as arguments."
 - "Does this function mutate its input? If yes, return a new object instead."
+
+---
+
+## Pure Functions vs. Side Effects
+
+A side effect is anything a function does besides returning a value.
+A **pure function** takes **inputs → computes → returns an output**. That's it. No traces left behind.
+A **side effect** is when the **function** also reaches outside its own scope to **read or change something in the world**:
+
+Modifying a variable outside itself
+Writing to a database or file
+Making a network request
+Logging to the console
+Mutating a DOM element
+Reading the current time or random numbers
+
+So the distinction isn't about what it returns — it's about what else it does.
+
+---
+
+## Comparing to `fundamentals-drills`
+
+what WILL go into calculations.ts are the **pure functions** that operate on this data:
+- `determineWinner(playerMove: Move, aiMove: Move): Outcome`
+- `generateAIMove(difficulty: Difficulty, gameState: GameState): Move`
+- `updateScore(gameState: GameState, outcome: Outcome): GameState
+
+Let me clarify what goes where by comparing to your puzzle assignment:
+
+**assignment1.ts had:**
+```typescript
+// Types (Data)
+export interface InventoryItem { ... }
+export interface OrderedItem { ... }
+export type OrderStatus = 'fulfilled' | 'cancelled' | 'rejected';
+export interface Order { ... }
+
+// Functions (Calculations)
+export function validateOrderItems(...) { ... }
+export function isOrderFulfillable(...) { ... }
+export function calculateOrderTotal(...) { ... }
+```
+
+**Your rock-paper-ts should follow the same pattern:**
+
+**dataTypes.ts (Data only):**
+```typescript
+// ✓ Keep all of this here — these are pure type definitions
+export interface GameState { ... }
+export interface RoundResult { ... }
+export type Move = "rock" | "paper" | "scissor";
+export type Outcome = "human" | "computer" | "tie";
+export type Difficulty = "normal" | "hard";
+```
+
+**calculations.ts (Functions that operate on the Data):**
+```typescript
+import { GameState, Move, Outcome } from './dataTypes';
+
+// ✓ These go here — pure functions using the types
+export function determineWinner(playerMove: Move, aiMove: Move): Outcome { ... }
+export function generateAIMove(difficulty: Difficulty, state: GameState): Move { ... }
+export function updateScore(state: GameState, outcome: Outcome): GameState { ... }
+```
 
 ---
 

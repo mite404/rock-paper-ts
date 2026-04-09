@@ -4,12 +4,21 @@
   "type": "module",
   "private": true,
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/bun": "latest",
     "@types/node": "^25.5.2",
+    "@typescript-eslint/eslint-plugin": "^8.58.1",
+    "@typescript-eslint/parser": "^8.58.1",
+    "eslint": "^10.2.0",
     "rumdl": "^0.1.67"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "scripts": {
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "type-check": "tsc --noEmit"
+  }
 }

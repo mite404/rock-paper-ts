@@ -10,7 +10,7 @@ export interface GameState {
   humanScore: number;
   computerScore: number;
   move: Move;
-  roundHistory: RoundResult;
+  roundResults: Array<RoundResult>;
 }
 
 export interface RoundResult {
