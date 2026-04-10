@@ -24,7 +24,7 @@ function generateHardAIMove(gameState: GameState): Move {
   if (rockCount === mostCommon) return "paper";  // Counter rock
   if (paperCount === mostCommon) return "scissor";  // Counter paper
   if (scissorCount === mostCommon) return "rock";  // Counter scissor
-  
+
   // Tie? Return random
   return "rock";
 }
