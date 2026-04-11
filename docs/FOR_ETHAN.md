@@ -37,7 +37,7 @@ When you start coding, ask yourself:
 
 ---
 
-## Pure Functions vs. Side Effects
+# Pure Functions vs. Side Effects
 
 A side effect is anything a function does besides returning a value.
 A **pure function** takes **inputs → computes → returns an output**. That's it. No traces left behind.
@@ -54,7 +54,43 @@ So the distinction isn't about what it returns — it's about what else it does.
 
 ---
 
-## Comparing to `fundamentals-drills`
+## Input Validation & Constraints Belong in the Action Layer
+
+**Keep pure functions simple: assume inputs are valid.**
+
+Pure functions like `calculateScore` should NOT validate their inputs. If there's a rule like "score can't be negative," that constraint belongs in **Assignment 2 (the action layer)**, not in the calculation.
+
+Here's why:
+
+- `calculateScore` just does the math: given a current score and a result, what's the new score?
+- It assumes inputs are already valid (i.e., `currentScore` is a legit number, `result` is a valid GameResult)
+- The action layer is responsible for **enforcing game rules** before calling calculations, or validating the final state after
+
+In practice, for rock-paper-scissors, negative scores probably won't happen anyway if you're running a standard best-of-7 (first to 4 wins). The game ends before you accumulate enough losses. But here's the pattern anyway:
+
+```typescript
+// ❌ DON'T do this in calculations.ts
+function calculateScore(currentScore: number, result: GameResult): number {
+  const newScore = currentScore + (result === 'WIN' ? 1 : 0);
+  if (newScore < 0) throw new Error('Score cannot be negative'); // ← Wrong layer!
+  return newScore;
+}
+
+// ✅ DO this in actions.ts (Assignment 2)
+const newScore = calculateScore(gameState.humanScore, result);
+const safeScore = Math.max(newScore, 0); // enforce the rule here, not in calculateScore
+
+const newGameState = {
+  ...gameState,
+  humanScore: safeScore,
+};
+```
+
+**The pattern:** Keep the pure function pure and simple. Let the action layer handle business logic and constraints.
+
+---
+
+# Comparing to `fundamentals-drills`
 
 what WILL go into calculations.ts are the **pure functions** that operate on this data:
 - `determineWinner(playerMove: Move, aiMove: Move): Outcome`
@@ -101,7 +137,7 @@ export function updateScore(state: GameState, outcome: Outcome): GameState { ...
 
 ---
 
-## "Enforce Learning Goals" via `eslint` Rules
+# "Enforce Learning Goals" via `eslint` Rules
 
 These rules directly support the **immutable state** and **pure functions** requirements:
 
@@ -145,7 +181,7 @@ function generateAIMove(difficulty: "easy" | "hard", state: GameState): Move {
 
 ---
 
-## "TypeScript-Specific Best Practices"
+# "TypeScript-Specific Best Practices"
 
 These catch bugs that are silent or subtle without ESLint:
 

@@ -1,6 +1,6 @@
 // Data types & pure functions
 
-import type { GameResult, Move } from "../types/dataTypes";
+import type { GameResult, GameState, Move } from "../types/dataTypes";
 
 export function determineWinner(humanMove: Move, aiMove: Move): GameResult {
   const rockBeats = "scissor";
@@ -22,6 +22,17 @@ export function determineWinner(humanMove: Move, aiMove: Move): GameResult {
   } else return "TIE";
 }
 
-export function calculateScore(currentScore: number, result: GameResult) {}
+export function calculateScore(
+  currentScore: number,
+  result: GameResult,
+): number {
+  if (result === 'WIN') {
+    return currentScore + 1;
+  } else if (result === 'LOSE') {
+    return currentScore - 1;
+  } else {
+    return currentScore;
+  }
+}
 
 export function generateAiMove(difficulty, gameState) {}
