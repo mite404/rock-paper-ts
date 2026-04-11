@@ -21,4 +21,4 @@ export type GameResult = "WIN" | "LOSE" | "TIE";
 
 export type Move = "rock" | "paper" | "scissor";
 // export type Outcome = "human" | "computer" | "tie"
-export type Difficulty = "normal" | "hard";
+export type Difficulty = "normal" | "hard" | "random";
