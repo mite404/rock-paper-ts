@@ -7,6 +7,12 @@ import type {
   Move,
 } from "../types/dataTypes";
 
+/**
+ * Determines the outcome of a single round.
+ * @param humanMove - The human player's move
+ * @param aiMove - The AI player's move
+ * @returns WIN, LOSE, or TIE
+ */
 export function determineWinner(humanMove: Move, aiMove: Move): GameResult {
   const rockBeats = "scissor";
   const paperBeats = "rock";
@@ -27,6 +33,12 @@ export function determineWinner(humanMove: Move, aiMove: Move): GameResult {
   } else return "TIE";
 }
 
+/**
+ * Updates the score based on the round result.
+ * @param currentScore - The current score
+ * @param result - The outcome of the round
+ * @returns Updated score (+1 for WIN, -1 for LOSE, unchanged for TIE)
+ */
 export function calculateScore(
   currentScore: number,
   result: GameResult,
@@ -40,6 +52,14 @@ export function calculateScore(
   }
 }
 
+/**
+ * Generates an AI move based on difficulty and game history.
+ * - "normal": Returns a random move
+ * - "hard": Analyzes player history and counters the most common move
+ * @param difficulty - The AI difficulty level
+ * @param gameState - The current game state (used for history analysis)
+ * @returns A move (rock, paper, or scissor)
+ */
 export function generateAiMove(
   difficulty: Difficulty,
   gameState: GameState,
@@ -77,6 +97,12 @@ export function generateAiMove(
   }
 }
 
+/**
+ * Selects a random move from an array of moves.
+ * @param moves - Array of valid moves
+ * @returns A randomly selected move
+ * @throws Error if the random selection fails
+ */
 export function pickRandomMove(moves: Array<Move>): Move {
   const index = Math.floor(Math.random() * moves.length);
   const move = moves[index];
