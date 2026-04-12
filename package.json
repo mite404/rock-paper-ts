@@ -7,7 +7,9 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "type-check": "tsc --noEmit",
-    "test": "vitest"
+    "test": "vitest",
+    "lint:md": "rumdl check",
+    "format:md": "rumdl fmt"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

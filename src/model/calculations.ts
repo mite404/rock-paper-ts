@@ -1,6 +1,5 @@
 // Data types & pure functions
 
-import { diff } from "util";
 import type {
   Difficulty,
   GameResult,
