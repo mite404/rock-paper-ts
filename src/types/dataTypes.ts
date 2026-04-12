@@ -2,7 +2,6 @@
 // what player we are
 // what round we're in
 // what move each player has made
-//
 
 export interface GameState {
   difficultyLevel: Difficulty;
@@ -20,5 +19,4 @@ export interface RoundResult {
 export type GameResult = "WIN" | "LOSE" | "TIE";
 
 export type Move = "rock" | "paper" | "scissor";
-// export type Outcome = "human" | "computer" | "tie"
-export type Difficulty = "normal" | "hard" | "random";
+export type Difficulty = "normal" | "hard";

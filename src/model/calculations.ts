@@ -1,5 +1,6 @@
 // Data types & pure functions
 
+import { diff } from "util";
 import type {
   Difficulty,
   GameResult,
@@ -43,25 +44,20 @@ export function calculateScore(
 export function generateAiMove(
   difficulty: Difficulty,
   gameState: GameState,
-  randomNum: number,
 ): Move {
+  const moves: Move[] = ["rock", "paper", "scissor"];
+
+  if (difficulty === "normal") {
+    const move = pickRandomMove(moves);
+    return move;
+  }
+
   let rockCount = 0;
   let paperCount = 0;
   let scissorCount = 0;
 
-  // choosing truly random move as 'random' difficulty
-  const moves: Move[] = ["rock", "paper", "scissor"];
-  if (difficulty === "random") {
-    const index = Math.floor(randomNum * moves.length);
-    const move = moves[index];
-    if (!move) throw new Error("Invalid random index");
-    return move;
-  }
-
   // loop over each round in roundHistory
   // for each humanMove.rock/paper/scissor add 1 to counter
-
-  // scan roundHistory
   for (const round of gameState.roundHistory) {
     if (round.humanMove === "rock") rockCount++;
     if (round.humanMove === "paper") paperCount++;
@@ -76,7 +72,15 @@ export function generateAiMove(
   } else if (scissorCount === mostCommon) {
     return "rock";
   } else {
-    // if TIE, return random
-    return "rock";
+    // if TIE, pick randomly
+    const move = pickRandomMove(moves);
+    return move;
   }
+}
+
+export function pickRandomMove(moves: Array<Move>): Move {
+  const index = Math.floor(Math.random() * moves.length);
+  const move = moves[index];
+  if (!move) throw new Error("Invalid random index");
+  return move;
 }
