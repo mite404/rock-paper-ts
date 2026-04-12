@@ -136,13 +136,13 @@ calculations transform it.
 
 **More interesting than the warehouse:**
 
-- `generateAIMove(difficulty, gameState)` → Move
+- `getAiMove(difficulty, gameState)` → Move
   - Random difficulty: ignore `gameState`, return random move
   - Hard difficulty: analyze `gameState.roundHistory`, find the most common player move, counter it
   - This is a pure function that *computes* strategy, not a random generator
 
 **The key difference:** In the warehouse, `validateOrderItems` rejected bad data.
-Here, `validateMove` does the same. But then `generateAIMove` is *generative*—it
+Here, `validateMove` does the same. But then `getAiMove` is *generative*—it
 produces data from analysis. Both are calculations. Both take in data, output data,
 change nothing.
 
@@ -172,7 +172,7 @@ change nothing.
 1. **Assignment 1 (Data & Calculations):**
    - Define Move, GameState, Round types
    - Implement determineWinner
-   - Implement generateAIMove (both difficulties)
+   - Implement getAiMove (both difficulties)
    - Implement score calculation
    - Test edge cases (tie → no score change, hard AI on empty history, etc.)
 

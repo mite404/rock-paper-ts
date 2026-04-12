@@ -1,17 +1,12 @@
-// what do we need to track?
-// what player we are
-// what round we're in
-// what move each player has made
-
 export interface GameState {
   difficultyLevel: Difficulty;
   humanScore: number;
   aiScore: number;
-  roundHistory: Array<RoundResult>;
+  roundResults: Array<RoundResult>;
 }
 
 export interface RoundResult {
-  humanMove: Move;
+  playerMove: Move;
   aiMove: Move;
   result: GameResult;
 }

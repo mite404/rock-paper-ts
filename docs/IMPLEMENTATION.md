@@ -20,7 +20,7 @@ Let me think about what needs to happen in order:
 
 **What's next:**
 
-1. **Complete calculation tests** - Finish the test suite for generateAiMove and make sure all
+1. **Complete calculation tests** - Finish the test suite for getAiMove and make sure all
 calculations pass
 
 2. **Build the actions layer** - This is the orchestration/state management:
@@ -52,7 +52,7 @@ condition)
 
 Phase 1: Solidify the Pure Logic Layer**
 
-1. Finish tests for `generateAiMove()` — verify all difficulty levels and edge cases pass
+1. Finish tests for `getAiMove()` — verify all difficulty levels and edge cases pass
 2. Run full test suite for calculations — all tests green before moving on
 
 **Phase 2: Build the Orchestration Layer (Assignment 2)**
@@ -104,9 +104,9 @@ function generateHardAIMove(gameState: GameState): Move {
 
   // Scan roundHistory
   for (const round of gameState.roundHistory) {
-    if (round.humanMove === "rock") rockCount++;
-    if (round.humanMove === "paper") paperCount++;
-    if (round.humanMove === "scissor") scissorCount++;
+    if (round.playerMove === "rock") rockCount++;
+    if (round.playerMove === "paper") paperCount++;
+    if (round.playerMove === "scissor") scissorCount++;
   }
 
   // Find most common
