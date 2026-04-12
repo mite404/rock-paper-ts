@@ -13,7 +13,7 @@
 
 (side efx)
 
-- `generateAIMove(difficulty, gameState?)` → weighted randomness
+- `getAiMove(difficulty, gameState?)` → weighted randomness
 
 **State:**
 
@@ -96,12 +96,114 @@ and constraints.
 
 ---
 
+## Immutable State Updates in the Action Layer
+
+**The core pattern:** Never mutate state directly. Always return a *new* state object with updated fields.
+
+In `handleRound`, you're orchestrating calculations and building a new `GameState`. Here's the pattern:
+
+### Building Return Objects with Spread
+
+When you need to update *some* fields of an object and keep the rest unchanged:
+
+```typescript
+// ❌ BAD - mutating the input
+state.humanScore = newScore;
+return state;
+
+// ✅ GOOD - returning a new object
+return {
+  ...state,                    // copy all fields
+  humanScore: newScore,        // override this one
+  aiScore: newAiScore,         // and this one
+};
+```
+
+The spread (`...state`) copies all existing fields. Then you override specific fields below it.
+
+### Adding to Arrays Immutably
+
+When you need to add a new item to an array:
+
+```typescript
+// ❌ BAD - mutating the array
+state.roundHistory.push(newRound);
+return state;
+
+// ✅ GOOD - creating a new array
+return {
+  ...state,
+  roundHistory: [
+    ...state.roundHistory,   // copy all existing rounds
+    newRound                 // add the new round
+  ]
+};
+```
+
+### Complete Pattern: A Single Round
+
+Here's what a complete `handleRound` return looks like:
+
+```typescript
+export function handleRound(
+  playerMove: Move,
+  aiMove: Move,
+  state: GameState,
+): GameState {
+  // Step 1: Compute outcomes (pure calculations)
+  const roundResult = determineWinner(playerMove, aiMove);
+  const newHumanScore = calculateScore(state.humanScore, roundResult);
+  
+  let newAiScore = state.aiScore;
+  if (roundResult === "WIN") newAiScore -= 1;
+  else if (roundResult === "LOSE") newAiScore += 1;
+  
+  // Step 2: Build the new round record
+  const newRound = {
+    playerMove,
+    aiMove,
+    result: roundResult,
+  };
+  
+  // Step 3: Return a new GameState (never mutate the input)
+  return {
+    difficultyLevel: state.difficultyLevel, // unchanged
+    humanScore: newHumanScore,              // updated
+    aiScore: newAiScore,                    // updated
+    roundHistory: [
+      ...state.roundHistory,               // keep all old rounds
+      newRound                             // add the new one
+    ],
+  };
+}
+```
+
+### Common Mistakes
+
+**Intermediate arrays that aren't needed:**
+
+```typescript
+// ❌ BAD - creates an array, adds one item, ignores it
+const updatedRoundResults = [];
+updatedRoundResults.push(newRound);
+// never used!
+
+return {
+  ...state,
+  roundHistory: [...state.roundHistory, newRound], // should be here
+};
+```
+
+**Key insight:** Every variable should serve the return statement. If it doesn't, delete it.
+
+---
+
 ## Comparing to `fundamentals-drills`
 
 what WILL go into calculations.ts are the **pure functions** that operate on this data:
 
 - `determineWinner(playerMove: Move, aiMove: Move): Outcome`
-- `generateAIMove(difficulty: Difficulty, gameState: GameState): Move`
+- `getAiMove(difficulty: Difficulty, gameState: GameState): Move`
 - `updateScore(gameState: GameState, outcome: Outcome): GameState
 
 Let me clarify what goes where by comparing to your puzzle assignment:
@@ -141,7 +243,7 @@ import { GameState, Move, Outcome } from './dataTypes';
 
 // ✓ These go here — pure functions using the types
 export function determineWinner(playerMove: Move, aiMove: Move): Outcome { ... }
-export function generateAIMove(difficulty: Difficulty, state: GameState): Move { ... }
+export function getAiMove(difficulty: Difficulty, state: GameState): Move { ... }
 export function updateScore(state: GameState, outcome: Outcome): GameState { ... }
 ```
 
@@ -175,13 +277,13 @@ const gameState = initGame();
 
 ```typescript
 // ❌ BAD - modifies the input
-function generateAIMove(difficulty: "easy" | "hard", state: GameState): Move {
+function getAiMove(difficulty: "easy" | "hard", state: GameState): Move {
   state.roundHistory = []; // MUTATED!
   return randomMove();
 }
 
 // ✅ GOOD - pure function, reads state, returns result
-function generateAIMove(difficulty: "easy" | "hard", state: GameState): Move {
+function getAiMove(difficulty: "easy" | "hard", state: GameState): Move {
   const history = state.roundHistory; // read-only
   return computeMove(history, difficulty);
 }
@@ -267,14 +369,14 @@ These catch async mistakes:
 // ❌ BAD - promise created but never awaited
 async function playRound(state: GameState): Promise<GameState> {
   const playerMove = getPlayerInput(); // returns Promise, forgot await!
-  const aiMove = generateAIMove(state.difficulty, state);
+  const aiMove = getAiMove(state.difficulty, state);
   return updateState(state, playerMove, aiMove);
 }
 
 // ✅ GOOD
 async function playRound(state: GameState): Promise<GameState> {
   const playerMove = await getPlayerInput();
-  const aiMove = generateAIMove(state.difficulty, state);
+  const aiMove = getAiMove(state.difficulty, state);
   return updateState(state, playerMove, aiMove);
 }
 ```

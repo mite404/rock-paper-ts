@@ -1,11 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { diff } from "util";
 import type { GameResult, GameState, Move } from "../types/dataTypes";
-import {
-  determineWinner,
-  calculateScore,
-  generateAiMove,
-} from "./calculations";
+import { determineWinner, calculateScore, getAiMove } from "./calculations";
 
 describe("determineWinner", () => {
   it("human wins: rock beats scissor", () => {
@@ -47,10 +43,10 @@ describe("generate a move for AI opponent", () => {
       difficultyLevel: "normal",
       humanScore: 0,
       aiScore: 0,
-      roundHistory: [],
+      roundResults: [],
     };
 
-    const result = generateAiMove("normal", gameState);
+    const result = getAiMove("normal", gameState);
     expect(["rock", "paper", "scissor"]).toContain(result);
   });
 
@@ -59,10 +55,10 @@ describe("generate a move for AI opponent", () => {
       difficultyLevel: "hard",
       humanScore: 0,
       aiScore: 0,
-      roundHistory: [],
+      roundResults: [],
     };
 
-    const result = generateAiMove("hard", gameState);
+    const result = getAiMove("hard", gameState);
     expect(["rock", "paper", "scissor"]).toContain(result);
   });
 
@@ -71,14 +67,14 @@ describe("generate a move for AI opponent", () => {
       difficultyLevel: "hard",
       humanScore: 0,
       aiScore: 0,
-      roundHistory: [
-        { humanMove: "rock", aiMove: "scissor", result: "WIN" },
-        { humanMove: "rock", aiMove: "scissor", result: "WIN" },
-        { humanMove: "rock", aiMove: "paper", result: "LOSE" },
+      roundResults: [
+        { playerMove: "rock", aiMove: "scissor", result: "WIN" },
+        { playerMove: "rock", aiMove: "scissor", result: "WIN" },
+        { playerMove: "rock", aiMove: "paper", result: "LOSE" },
       ],
     };
 
-    const result = generateAiMove("hard", gameState);
+    const result = getAiMove("hard", gameState);
     expect(result).toBe("paper");
   });
 
@@ -87,12 +83,12 @@ describe("generate a move for AI opponent", () => {
       difficultyLevel: "hard",
       humanScore: 0,
       aiScore: 0,
-      roundHistory: [
-        { humanMove: "rock", aiMove: "paper", result: "LOSE" },
-        { humanMove: "paper", aiMove: "scissor", result: "LOSE" },
+      roundResults: [
+        { playerMove: "rock", aiMove: "paper", result: "LOSE" },
+        { playerMove: "paper", aiMove: "scissor", result: "LOSE" },
       ],
     };
-    const result = generateAiMove("hard", gameState);
+    const result = getAiMove("hard", gameState);
     expect(["rock", "paper", "scissor"]).toContain(result);
   });
 });

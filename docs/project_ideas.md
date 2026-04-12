@@ -86,7 +86,7 @@ Multi-round game with strategy tracking.
 
 - `determineWinner(playerMove, aiMove)` → WIN / LOSE / TIE
 - `calculateScore(result, currentScore)` → updated score
-- `generateAIMove(difficulty, playerHistory?)` → weighted randomness
+- `getAiMove(difficulty, playerHistory?)` → weighted randomness
 
 **State:**
 

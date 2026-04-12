@@ -9,25 +9,25 @@ import type {
 
 /**
  * Determines the outcome of a single round.
- * @param humanMove - The human player's move
+ * @param playerMove - The human player's move
  * @param aiMove - The AI player's move
  * @returns WIN, LOSE, or TIE
  */
-export function determineWinner(humanMove: Move, aiMove: Move): GameResult {
+export function determineWinner(playerMove: Move, aiMove: Move): GameResult {
   const rockBeats = "scissor";
   const paperBeats = "rock";
   const scissorBeats = "paper";
 
   if (
-    (humanMove === "rock" && aiMove === rockBeats) ||
-    (humanMove === "paper" && aiMove === paperBeats) ||
-    (humanMove === "scissor" && aiMove === scissorBeats)
+    (playerMove === "rock" && aiMove === rockBeats) ||
+    (playerMove === "paper" && aiMove === paperBeats) ||
+    (playerMove === "scissor" && aiMove === scissorBeats)
   ) {
     return "WIN";
   } else if (
-    (aiMove === "rock" && humanMove === rockBeats) ||
-    (aiMove === "paper" && humanMove === paperBeats) ||
-    (aiMove === "scissor" && humanMove === scissorBeats)
+    (aiMove === "rock" && playerMove === rockBeats) ||
+    (aiMove === "paper" && playerMove === paperBeats) ||
+    (aiMove === "scissor" && playerMove === scissorBeats)
   ) {
     return "LOSE";
   } else return "TIE";
@@ -60,10 +60,7 @@ export function calculateScore(
  * @param gameState - The current game state (used for history analysis)
  * @returns A move (rock, paper, or scissor)
  */
-export function generateAiMove(
-  difficulty: Difficulty,
-  gameState: GameState,
-): Move {
+export function getAiMove(difficulty: Difficulty, gameState: GameState): Move {
   const moves: Move[] = ["rock", "paper", "scissor"];
 
   if (difficulty === "normal") {
@@ -76,11 +73,11 @@ export function generateAiMove(
   let scissorCount = 0;
 
   // loop over each round in roundHistory
-  // for each humanMove.rock/paper/scissor add 1 to counter
-  for (const round of gameState.roundHistory) {
-    if (round.humanMove === "rock") rockCount++;
-    if (round.humanMove === "paper") paperCount++;
-    if (round.humanMove === "scissor") scissorCount++;
+  // for each playerMove.rock/paper/scissor add 1 to counter
+  for (const round of gameState.roundResults) {
+    if (round.playerMove === "rock") rockCount++;
+    if (round.playerMove === "paper") paperCount++;
+    if (round.playerMove === "scissor") scissorCount++;
   }
 
   const mostCommon = Math.max(rockCount, paperCount, scissorCount);
