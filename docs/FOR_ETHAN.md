@@ -198,6 +198,137 @@ return {
 
 ---
 
+## Dependency Injection & Callbacks: Decoupling Side Effects from the Controller
+
+The controller (`gameLoop`) needs to **perform side effects** (get player input, display results) but should NOT be tightly coupled to *how* those side effects happen. This is where **callbacks** and **dependency injection** come in.
+
+### The Pattern: Pass Functions as Arguments
+
+Instead of having the controller call `getPlayerInput()` directly, you **pass it in as a parameter**:
+
+```typescript
+// ❌ BAD - controller is tightly coupled to readline
+export function gameLoop(difficultyLevel: Difficulty): void {
+  for (let round = 0; round < 7; round++) {
+    const playerMove = getPlayerInput(); // ← hardcoded function call
+    // ... rest of loop
+  }
+}
+
+// ✅ GOOD - controller receives the function as a parameter (dependency injection)
+export function gameLoop(
+  difficultyLevel: Difficulty,
+  getInput: () => Move,  // ← callback parameter
+): void {
+  for (let round = 0; round < 7; round++) {
+    const playerMove = getInput(); // ← calls whatever was passed in
+    // ... rest of loop
+  }
+}
+```
+
+### Parameter Name vs. Implementation
+
+This confuses a lot of people. Here's what's happening:
+
+```typescript
+// In gameController.ts
+export function gameLoop(
+  difficultyLevel: Difficulty,
+  getInput: () => Move,  // ← parameter name is "getInput"
+): void { ... }
+
+// In view/display.ts
+export function displayRound(state: GameState): void { ... }
+export function displayFinalResult(state: GameState): void { ... }
+
+// In index.ts (CLI entry point)
+function getPlayerInput(): Move {
+  // readline logic here
+  return playerMove;
+}
+
+// When you call gameLoop, you pass the actual function
+gameLoop("normal", getPlayerInput);  // pass the function itself
+```
+
+**Key distinction:**
+- **`getInput`** = the parameter name in `gameLoop`. It's just a variable that holds a function reference.
+- **`getPlayerInput`** = the actual function defined in `index.ts`. It contains the readline logic.
+- When you call `gameLoop("normal", getPlayerInput)`, you're saying: "Here's a function that gets input. Use it."
+
+### Why This Matters: Testing
+
+With dependency injection, you can **swap in a mock** for testing:
+
+```typescript
+// In tests
+describe("gameLoop", () => {
+  it("plays rounds correctly", () => {
+    const mockMoves = ["rock", "paper", "scissor"];
+    let callCount = 0;
+    
+    // Pass a mock function instead of readline
+    gameLoop("normal", () => {
+      const move = mockMoves[callCount % mockMoves.length];
+      callCount++;
+      return move;
+    });
+    
+    // Test that the game ran with predictable input
+    expect(callCount).toBe(7); // looped 7 times
+  });
+});
+```
+
+Without dependency injection, you'd have to mock the entire readline module, which is much harder.
+
+### Same Pattern for Display Functions
+
+Display functions (`displayRound`, `displayFinalResult`) follow the same principle:
+
+```typescript
+// gameController.ts
+export function gameLoop(
+  difficultyLevel: Difficulty,
+  getInput: () => Move,
+  onRound: (state: GameState) => void,        // ← callback for display
+  onGameEnd: (state: GameState) => void,      // ← callback for final result
+): void {
+  for (let round = 0; round < 7; round++) {
+    const playerMove = getInput();
+    currentState = handleRound(playerMove, aiMove, currentState);
+    
+    onRound(currentState);  // ← calls whatever was passed in
+    
+    if (isGameOver(currentState)) break;
+  }
+  onGameEnd(currentState);
+}
+
+// index.ts
+gameLoop(
+  "normal",
+  getPlayerInput,      // get input
+  displayRound,        // display each round
+  displayFinalResult,  // display final score
+);
+```
+
+This way, the controller **doesn't know or care** if you're displaying to console, writing to a file, or sending to a UI. It just calls the callbacks it receives.
+
+### Summary
+
+- **Callback** = a function passed as an argument, to be called later
+- **Dependency injection** = passing a function (or object) that contains the behavior you need, rather than hardcoding it
+- **Why it matters for ACD:**
+  - The controller (Assignment 2) orchestrates the game flow
+  - The CLI (index.ts) provides the *implementations* of I/O (readline, console.log)
+  - They're decoupled: the controller doesn't import readline; the CLI does
+  - Easier to test: swap in mocks without touching the controller
+
+---
+
 ## Comparing to `fundamentals-drills`
 
 what WILL go into calculations.ts are the **pure functions** that operate on this data:

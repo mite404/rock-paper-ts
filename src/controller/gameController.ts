@@ -18,7 +18,7 @@ export function handleRound(
   // take in player move + aiMove
   const roundResult = determineWinner(playerMove, aiMove); // determine winner
 
-  const newHumanScore = calculateScore(state.humanScore, roundResult);
+  const newPlayerScore = calculateScore(state.playerScore, roundResult);
 
   let newAiScore = state.aiScore;
   if (roundResult === "WIN") newAiScore -= 1;
@@ -34,34 +34,41 @@ export function handleRound(
   // add previous moves & resulting score to round history
   return {
     difficultyLevel: state.difficultyLevel,
-    humanScore: newHumanScore,
+    playerScore: newPlayerScore,
     aiScore: newAiScore,
     roundResults: [...state.roundResults, updatedRoundResult],
+    isOver: false,
   };
 }
 
 // manage the full game
-export function gameLoop(difficultyLevel: Difficulty): void {
+export function gameLoop(
+  difficultyLevel: Difficulty,
+  getInput: () => Move,
+  onRound: (state: GameState) => void,
+  onGameEnd: (state: GameState) => void,
+): void {
   // init game state
   let currentState: GameState = {
     difficultyLevel,
-    humanScore: 0,
+    playerScore: 0,
     aiScore: 0,
     roundResults: [],
+    isOver: false,
   };
 
   // loop: get player input => play round => check if game is over
   // loop rounds until best out of 7 or game over
   for (let round = 0; round < 7; round++) {
-    const playerMove = getPlayerInput();
+    const playerMove = getInput();
     const aiMove = getAiMove(currentState.difficultyLevel, currentState);
     currentState = handleRound(playerMove, aiMove, currentState);
 
-    displayRound(currentState);
+    onRound(currentState);
 
-    if (currentState.humanScore === 4 || currentState.aiScore === 4) {
+    if (currentState.playerScore === 4 || currentState.aiScore === 4) {
       break;
     }
   }
-  displayFinalResult(currentState);
+  onGameEnd(currentState);
 }

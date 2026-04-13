@@ -1,8 +1,9 @@
 export interface GameState {
   difficultyLevel: Difficulty;
-  humanScore: number;
+  playerScore: number;
   aiScore: number;
   roundResults: Array<RoundResult>;
+  isOver: boolean;
 }
 
 export interface RoundResult {

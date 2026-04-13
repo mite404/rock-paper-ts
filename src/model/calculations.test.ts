@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { diff } from "util";
-import type { GameResult, GameState, Move } from "../types/dataTypes";
+import type { GameState } from "../types/dataTypes";
 import { determineWinner, calculateScore, getAiMove } from "./calculations";
 
 describe("determineWinner", () => {
@@ -41,7 +40,7 @@ describe("generate a move for AI opponent", () => {
   it("normal difficulty returns a valid move", () => {
     const gameState: GameState = {
       difficultyLevel: "normal",
-      humanScore: 0,
+      playerScore: 0,
       aiScore: 0,
       roundResults: [],
     };
@@ -53,7 +52,7 @@ describe("generate a move for AI opponent", () => {
   it("hard difficulty with empty history returns a valid move", () => {
     const gameState: GameState = {
       difficultyLevel: "hard",
-      humanScore: 0,
+      playerScore: 0,
       aiScore: 0,
       roundResults: [],
     };
@@ -65,7 +64,7 @@ describe("generate a move for AI opponent", () => {
   it("hard difficulty counters most common player move", () => {
     const gameState: GameState = {
       difficultyLevel: "hard",
-      humanScore: 0,
+      playerScore: 0,
       aiScore: 0,
       roundResults: [
         { playerMove: "rock", aiMove: "scissor", result: "WIN" },
@@ -81,7 +80,7 @@ describe("generate a move for AI opponent", () => {
   it("hard difficulty handles tie in frequencies by returning a valid move", () => {
     const gameState: GameState = {
       difficultyLevel: "hard",
-      humanScore: 0,
+      playerScore: 0,
       aiScore: 0,
       roundResults: [
         { playerMove: "rock", aiMove: "paper", result: "LOSE" },

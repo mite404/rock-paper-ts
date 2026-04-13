@@ -1,6 +1,6 @@
-## Getting Started with Readline API
+# Getting Started with Readline API
 
-### What You're Building
+## What You're Building
 
 A CLI where:
 
