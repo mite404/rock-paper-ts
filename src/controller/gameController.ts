@@ -42,12 +42,12 @@ export function handleRound(
 }
 
 // manage the full game
-export function gameLoop(
+export async function gameLoop(
   difficultyLevel: Difficulty,
-  getInput: () => Move,
+  getInput: () => Promise<Move>,
   onRound: (state: GameState) => void,
   onGameEnd: (state: GameState) => void,
-): void {
+): Promise<void> {
   // init game state
   let currentState: GameState = {
     difficultyLevel,
@@ -60,7 +60,7 @@ export function gameLoop(
   // loop: get player input => play round => check if game is over
   // loop rounds until best out of 7 or game over
   for (let round = 0; round < 7; round++) {
-    const playerMove = getInput();
+    const playerMove = await getInput();
     const aiMove = getAiMove(currentState.difficultyLevel, currentState);
     currentState = handleRound(playerMove, aiMove, currentState);
 

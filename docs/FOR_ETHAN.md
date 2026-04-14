@@ -257,6 +257,30 @@ gameLoop("normal", getPlayerInput);  // pass the function itself
 - **`getPlayerInput`** = the actual function defined in `index.ts`. It contains the readline logic.
 - When you call `gameLoop("normal", getPlayerInput)`, you're saying: "Here's a function that gets input. Use it."
 
+### Passing Functions vs. Calling Functions (Common Gotcha)
+
+This is where people get confused. There's a BIG difference:
+
+```typescript
+// ❌ WRONG - calling the function immediately
+const move = await getPlayerInput();  // executes right now, returns a single Move
+await gameLoop(difficulty, move, displayRound, displayFinalResult);
+// "move" is a string (Move type), not a function!
+// gameLoop expects a function, not the result of calling it
+
+// ✅ CORRECT - passing the function itself
+await gameLoop(difficulty, getPlayerInput, displayRound, displayFinalResult);
+// No () after getPlayerInput — pass the function, not its result
+```
+
+**Why this matters:**
+
+- **Execution timing**: If you call `getPlayerInput()` immediately, you get ONE move. Then the game has no way to ask for more moves in subsequent rounds. By passing the function, `gameLoop` can call it 7 times (once per round).
+- **Function vs. value**: `getPlayerInput` (no parentheses) is the function itself. `getPlayerInput()` (with parentheses) *executes* the function and returns its result.
+- **The callback contract**: `gameLoop` is saying "give me a function I can call whenever I need input." It's not saying "give me the result of calling that function once."
+
+This is the essence of callbacks: you're *delegating* the decision of when to call the function to the caller.
+
 ### Why This Matters: Testing
 
 With dependency injection, you can **swap in a mock** for testing:

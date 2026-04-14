@@ -10,44 +10,54 @@ const rl = readline.createInterface({
 
 function askQuestion(query: string): Promise<string> {
   return new Promise((res) => {
-    rl.question(query, res)
-  })
+    rl.question(query, res);
+  });
 }
 
-function getDifficulty(query: string): Promise<string> {
-  while(true) {
-    const input = await askQuestion('Choose your difficulty: normal | hard: ')
-    const difficulty: Difficulty = parseDifficulty(input)
+async function getDifficulty(): Promise<Difficulty> {
+  while (true) {
+    const input = await askQuestion("Choose your difficulty: normal | hard: ");
+    const difficulty: Difficulty | null = parseDifficulty(input);
 
     if (difficulty) return difficulty;
-    console.log("Invalid difficulty. Try again.")
+    console.log("Invalid difficulty. Try again.");
   }
 }
 
-function getPlayerInput(): Promise<Move> {
-  while (!gameState.isOver) {
-    const input = await askQuestion("Your move (rock/paper/scissors): ")
-    const move = parsePlayerInput(input)
+async function getPlayerInput(): Promise<Move> {
+  while (true) {
+    const input = await askQuestion("Your move (rock/paper/scissors): ");
+    const move = parsePlayerInput(input);
 
-  if (move) return move;
-  console.log('Invalid move. Try again.')
+    if (move) return move;
+    console.log("Invalid move. Try again.");
+  }
 }
 
 function parsePlayerInput(input: string): Move | null {
-  const normalized = input.trim().toLowerCase()
-  if (normalized === 'rock' || normalized === 'paper' || normalized === 'scissor') {
-    return normalized
+  const normalized = input.trim().toLowerCase();
+  if (
+    normalized === "rock" ||
+    normalized === "paper" ||
+    normalized === "scissor"
+  ) {
+    return normalized;
   }
   return null;
 }
 
 function parseDifficulty(input: string): Difficulty | null {
-  const normalized = input.trim().toLowerCase()
-  if (normalized === 'normal' || normalized === 'hard') {
-    return normalized
+  const normalized = input.trim().toLowerCase();
+  if (normalized === "normal" || normalized === "hard") {
+    return normalized as Difficulty;
   }
   return null;
 }
 
-// CLI entry point
-gameLoop(difficulty, getPlayerInput, displayRound, displayFinalResult);
+async function main() {
+  const difficulty = await getDifficulty();
+
+  await gameLoop(difficulty, getPlayerInput, displayRound, displayFinalResult);
+}
+
+main().catch(console.error);
