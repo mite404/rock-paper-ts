@@ -17,7 +17,6 @@ export function handleRound(
 ): GameState {
   // take in player move + aiMove
   const roundResult = determineWinner(playerMove, aiMove); // determine winner
-
   const newPlayerScore = calculateScore(state.playerScore, roundResult);
 
   let newAiScore = state.aiScore;
